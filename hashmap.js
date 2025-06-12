@@ -81,14 +81,45 @@ class HashMap {
   // has takes key as an argument and returns true or false
   // based on whether or not the key is in the hash map
   has(key) {
-    // code
+    // get bucket index
+    let index = this.hash(key);
+    // if bucket doesn't exist
+    if (this.buckets[index] === undefined) {
+      return false;
+    }
+    // if bucket does exist loop through all key-value pairs in bucket
+    for (let i = 0; i < this.buckets[index].length; i++) {
+      // if current pair's key matches
+      if (this.buckets[index][i].key === key) {
+        return true;
+      }
+    }
+    // if key wasn't found
+    return false;
   }
 
   // remove takes key as an argument and if key is in hash map
   // should remove entry with that key and return true
   // if key is not in hash map, return false
   remove(key) {
-    // code
+    // get bucket index
+    let index = this.hash(key);
+    // if bucket doesn't exist
+    if (this.buckets[index] === undefined) {
+      return false;
+    }
+    // if bucket does exist loop through all key-value pairs in bucket
+    for (let i = 0; i < this.buckets[index].length; i++) {
+      // if current pair's key matches
+      if (this.buckets[index][i].key === key) {
+        // remove entry with that key
+        this.buckets[index].splice(i, 1);
+        this.itemCount--;
+        return true;
+      }
+    }
+    // if key wasn't found
+    return false;
   }
 
   // length returns number of stored keys
