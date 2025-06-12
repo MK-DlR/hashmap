@@ -1,5 +1,7 @@
 // hashmap.js
 
+export { HashMap };
+
 // HashMap class
 class HashMap {
   constructor(loadFactor, capacity) {
@@ -55,7 +57,7 @@ class HashMap {
     let currentLoadFactor = this.itemCount / this.capacity;
     if (currentLoadFactor >= this.loadFactor) {
       // grow buckets to double capacity
-      // ???
+      this.resize();
     }
   }
 
@@ -124,26 +126,119 @@ class HashMap {
 
   // length returns number of stored keys
   length() {
-    // code
+    return this.itemCount;
   }
 
   // clear removes all entries
   clear() {
-    // code
+    this.buckets = new Array(this.capacity);
+    this.itemCount = 0;
   }
 
   // keys returns array containing all keys
   keys() {
-    // code
+    // empty array to hold keys
+    let keyArray = [];
+    // loop through buckets array
+    for (let i = 0; i < this.buckets.length; i++) {
+      // skip undefined buckets
+      if (this.buckets[i] === undefined) {
+        continue;
+      }
+      // loop through each bucket's array of key-value pairs
+      for (let j = 0; j < this.buckets[i].length; j++) {
+        // push each key into keyArray
+        keyArray.push(this.buckets[i][j].key);
+      }
+    }
+    return keyArray;
   }
 
   // values returns array containing all values
   values() {
-    // code
+    // empty array to hold values
+    let valueArray = [];
+    // loop through buckets array
+    for (let i = 0; i < this.buckets.length; i++) {
+      // skip undefined buckets
+      if (this.buckets[i] === undefined) {
+        continue;
+      }
+      // loop through each bucket's array of key-value pairs
+      for (let j = 0; j < this.buckets[i].length; j++) {
+        // push each value into valueArray
+        valueArray.push(this.buckets[i][j].value);
+      }
+    }
+    return valueArray;
   }
 
   // entries returns array that contains each key-value pair
   entries() {
-    // code
+    // empty array to hold entries
+    let entriesArray = [];
+    // loop through buckets array
+    for (let i = 0; i < this.buckets.length; i++) {
+      // skip undefined buckets
+      if (this.buckets[i] === undefined) {
+        continue;
+      }
+      // loop through each bucket's array of key-value pairs
+      for (let j = 0; j < this.buckets[i].length; j++) {
+        // push each entry into entriesArray
+        entriesArray.push([this.buckets[i][j].key, this.buckets[i][j].value]);
+      }
+    }
+    return entriesArray;
+  }
+
+  // resize to double bucket capacity
+  resize() {
+    // save reference to old buckets
+    const oldBuckets = this.buckets;
+    // create new array with double the capacity
+    this.buckets = new Array(2 * this.capacity);
+    // update capacity
+    this.capacity = 2 * this.capacity;
+    // reset count
+    this.itemCount = 0;
+    // loop over all key-value pairs in old buckets
+    for (let i = 0; i < oldBuckets.length; i++) {
+      // skip undefined buckets
+      if (oldBuckets[i] === undefined) {
+        continue;
+      }
+      // loop through each bucket's array of key-value pairs
+      for (let j = 0; j < oldBuckets[i].length; j++) {
+        const pair = oldBuckets[i][j];
+        // use private helper function
+        this._insertWithoutResize(pair.key, pair.value);
+      }
+    }
+  }
+
+  // private helper function to insert key-value pairs without triggering a resize
+  _insertWithoutResize(key, value) {
+    // hash key to get index
+    const index = this.hash(key);
+    // if bucket is empty create new array with the pair
+    if (this.buckets[index] === undefined) {
+      this.buckets[index] = [{ key, value }];
+      this.itemCount++;
+    } else {
+      // if bucket exists check for existing key and update or push new
+      let found = false;
+      for (let i = 0; i < this.buckets[index].length; i++) {
+        if (this.buckets[index][i].key === key) {
+          this.buckets[index][i].value = value;
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        this.buckets[index].push({ key, value });
+        this.itemCount++;
+      }
+    }
   }
 }
